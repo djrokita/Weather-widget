@@ -1,16 +1,14 @@
+/* {
+	outline: 1px solid red;
+}*/
+
 body {
-	margin: 0;
-	background: #444;
-	color: #fff;
-	font-family: monospace;
+	background: #ccc;
 	font-size: 18px;
 }
 
 .container {
-	width: 600px;
-	margin-left: auto;
-	margin-right: auto;
-	text-align: center;
+	/*width: 600px;*/
 }
 
 .list {
