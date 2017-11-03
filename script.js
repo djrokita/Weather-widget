@@ -7,47 +7,73 @@ $(document).ready(function() {
 
   var $btn = $('#get-weather');
   var $list = $('#city-list');
-  var $listItem = $('.list-group-item');
+  var $listItem = $list.find('.list-group-item');
   var intervalData;
+  var ifDataPresent = false;
+  var timeGetCity = 5000;
+  var timeGetData = 5000;
+ 	var counter = 0;
 
   function randomCities(array) {
+    //clearContainer();
     citiesRandom = [];
     var randomIndex = 0;
     var city = '';
     while (citiesRandom.length < 3) {
       randomIndex = Math.floor(Math.random() * 5);
       city = array[randomIndex];
-      console.log(randomIndex);
       if (citiesRandom.indexOf(city) < 0) citiesRandom.push(array[randomIndex]);
     }
 
     console.log(citiesRandom);
+
     return citiesRandom;
   }
-
+	
+	//getRequest(randomCities(cities));
   fillData();
-  var intervalCities = setInterval(function() {
-    clearInterval(intervalData);
-    fillData();     
-  }, 10000);
-/*
+  /*
   var intervalData = setInterval(function() {
-    clearContainer();
+	     getRequest(citiesRandom);
+	      },
+	      timeGetData);
+	*/      
+  var cityInterval = setInterval(function() {
+  	randomCities(cities)
+  }, 10000);
+
+  var myInterval = setInterval(function() {    
     getRequest(citiesRandom);
-    }, 3000);
+}, 5000);
+
+
+  /*
+  if (counter == 2) {
+  	counter = 0;
+  	randomCities(city);
+  }
 */
-  //randomCities(cities);
+  function runInnerInterval() {
+  	innerInterval = setInterval(function() {
+  		getRequest(citiesRandom);
+  	}, 5000);
+  }
 
   function getRequest(city) {
-    console.log('Get');
     clearContainer();
-    for (var i = 0; i < city.length; i++) {
-      $.ajax({
-        url: 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22' + city[i] + '%22)%20and%20u%3D%22c%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys',
-        method: 'get',
-        success: showWeather
-      });
-    }
+    counter++;
+    console.log('Request');
+    console.log('Liczba pkt: ', $('li').length);
+    //if (!ifDataPresent && $('li').length == 0) {
+	    for (var i = 0; i < city.length; i++) {
+	      $.ajax({
+	        url: 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22' + city[i] + '%22)%20and%20u%3D%22c%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys',
+	        method: 'get',
+	        success: showWeather
+	      });
+	  }
+	  console.log('Licznik: ', counter);
+    //}
   }
 
   function showWeather(resp) {
@@ -58,41 +84,38 @@ $(document).ready(function() {
     var temp = resp.query.results.channel.item.condition.temp;
     var text = resp.query.results.channel.item.condition.text;
     var $celcius = $('<sup>').text(' o');
-    var $imgUrl = resp.query.results.channel.item.description;
-    var $imgString = $imgUrl.substr(9, 50);
-    var x = '<img src="http://l.yimg.com/a/i/us/we/52/27.gif"/>'
-    $img = $($imgString);
-    //$img.appendTo('main');
+    var $imgStr = resp.query.results.channel.item.description;
+    var $img = $imgStr.substr(9, 50);
+    var $linkStr = resp.query.results.channel.link;
+    var $linkUrl = $linkStr.substr($linkStr.indexOf('*') + 1);
+    var $link = $('<a>').attr('href', $linkUrl).attr('target', '_blank');    
 
     $item.text(cityName + ': ');
     $item.append(temp);
     $item.append($celcius);
     $item.append('C, ' + text);
     $item.append($img);
-    $item.appendTo($list);
+    $item.appendTo($link);
+    $link.appendTo($list);
+    $item.hide();
+    $item.fadeIn('fast');
+  	console.log('Liczba li: ', $('li').length);
+  	checkList();
   }
-
-  function intervalRequest() {
-    console.log('Interval Get');
-    clearContainer();
-    getRequest(citiesRandom);
-    }
-
 
   function fillData() {
     clearContainer();
-    getRequest(randomCities(cities));
-    intervalData = setInterval(function() {
-      clearContainer();
-      getRequest(citiesRandom);
-      }, 5000);
-
-    //var intervalData = setInterval(intervalRequest, 5000);
-  }
+ 	getRequest(randomCities(cities));
+	}
 
   function clearContainer() {
     $list.empty();
-    console.log('cleaner');
+    ifDataPresent = false;
+    console.log(ifDataPresent);
+  }
+
+  function checkList() {
+  	if($('li').length > 3) alert('Błąd!');
   }
 
 });
