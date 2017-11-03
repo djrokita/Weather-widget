@@ -7,16 +7,17 @@ $(document).ready(function() {
 
   var $btn = $('#get-weather');
   var $list = $('#city-list');
-  //var $item = $('<li>').attr('class', 'list-group-item');
+  var $listItem = $('.list-group-item');
+  var intervalData;
 
   function randomCities(array) {
     citiesRandom = [];
     var randomIndex = 0;
     var city = '';
     while (citiesRandom.length < 3) {
-      randomIndex = Math.floor(Math.random() * 4);
+      randomIndex = Math.floor(Math.random() * 5);
       city = array[randomIndex];
-      console.log(city);
+      console.log(randomIndex);
       if (citiesRandom.indexOf(city) < 0) citiesRandom.push(array[randomIndex]);
     }
 
@@ -26,19 +27,27 @@ $(document).ready(function() {
 
   fillData();
   var intervalCities = setInterval(function() {
-    clearInterval();
-    fillData(); 
-    //var intervalData = setInterval(intervalRequest, 5000);
+    clearInterval(intervalData);
+    fillData();     
   }, 10000);
-
+/*
+  var intervalData = setInterval(function() {
+    clearContainer();
+    getRequest(citiesRandom);
+    }, 3000);
+*/
   //randomCities(cities);
 
   function getRequest(city) {
-    $.ajax({
-      url: 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22' + city + '%22)%20and%20u%3D%22c%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys',
-      method: 'get',
-      success: showWeather
-    });
+    console.log('Get');
+    clearContainer();
+    for (var i = 0; i < city.length; i++) {
+      $.ajax({
+        url: 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22' + city[i] + '%22)%20and%20u%3D%22c%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys',
+        method: 'get',
+        success: showWeather
+      });
+    }
   }
 
   function showWeather(resp) {
@@ -63,27 +72,21 @@ $(document).ready(function() {
     $item.appendTo($list);
   }
 
-  function tripleRequest(cities) {
-    console.log('Get');
-    clearContainer();
-    for (var i = 0; i < cities.length; i++) {
-      getRequest(cities[i]);
-    }
-  }
-
   function intervalRequest() {
     console.log('Interval Get');
     clearContainer();
-    for (var i = 0; i < citiesRandom.length; i++) {
-      getRequest(citiesRandom[i]);
+    getRequest(citiesRandom);
     }
-  }
 
-  //tripleRequest();
 
   function fillData() {
     clearContainer();
-    tripleRequest(randomCities(cities));
+    getRequest(randomCities(cities));
+    intervalData = setInterval(function() {
+      clearContainer();
+      getRequest(citiesRandom);
+      }, 5000);
+
     //var intervalData = setInterval(intervalRequest, 5000);
   }
 
