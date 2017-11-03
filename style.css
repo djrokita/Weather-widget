@@ -7,10 +7,40 @@ body {
 	font-size: 18px;
 }
 
-.container {
-	/*width: 600px;*/
+main {
+	width: 400px;
+	margin-top: 5%;
 }
 
 .list {
 	list-style: none;
+}
+
+.panel-title {
+	font-size: 1.5em;
+}
+
+.panel-body {
+	min-height: 270px;
+}
+
+.list-group-item {
+	border: none;
+}
+
+img {
+	margin-left: 10px;
+}
+
+a {
+	color: inherit;
+}
+
+a:hover {
+	text-decoration: none;
+	cursor: pointer;
+}
+
+a:focus {
+	text-decoration: none;
 }
