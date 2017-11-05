@@ -35,7 +35,7 @@ $(document).ready(function() {
 
   var cityInterval = setInterval(function() {
     randomCities(cities);
-  }, 59999);
+  }, 60000);
 
   var dataInterval = setInterval(function() {
     getRequest();
